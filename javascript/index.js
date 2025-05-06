@@ -1,3 +1,5 @@
+let cityTimeZone = null;
+
 function updateTime(){
   //LOS_ANGELES
 // let losAngelesDateElement= document.querySelector("#los-angeles .date")
@@ -42,12 +44,18 @@ if (delhiElement){
 
 
 function updateCity(event){
-  let cityTimeZone = event.target.value;
+  cityTimeZone = event.target.value;
+
+  if (cityTimeZone === 'current'){
+    cityTimeZone=moment.tz.guess();
+  }
+
+
   let cityName=cityTimeZone.replace("_", " ").split("/")[1];
   let cityTime = moment().tz(cityTimeZone);
   let citiesElement=document.querySelector("#cities");
   
-  citiesElement.innerHTML=`
+  citiesElement.innerHTML =`
   <div class="city">
       <div>
         <h2>${cityName}</h2>
@@ -56,12 +64,17 @@ function updateCity(event){
       <div class="time">${cityTime.format("h:mm:ss [<small>]A[</small>]")}</div>
     </div>
     `;
+
 }
 
 updateTime();
 setInterval(updateTime, 1000);
 
-
+setInterval(() => {
+  if (cityTimeZone) {
+    updateCity({ target: { value: cityTimeZone } });
+  }
+}, 1000);
 
 let citiesSelectElement = document.querySelector("#city");
 citiesSelectElement.addEventListener("change", updateCity)
